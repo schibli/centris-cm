@@ -1,0 +1,13 @@
+---
+# copy ifcfg-* to remote host
+- hosts: dbserver 
+  user: root
+  tasks:
+   - name: copy network configuration files
+     copy: src=/etc/ansible/files/{{inventory_hostname}}/network/ dest=/etc/sysconfig/network-scripts/ owner=root group=root mode=0644
+     tags:
+       - copy_network_config
+   - name: restart network
+     service:
+       name: network
+       state: restarted

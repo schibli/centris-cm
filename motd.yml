@@ -1,0 +1,18 @@
+---
+  - hosts: oel-ansible-1
+    user: root
+    vars: 
+     motd_welcome: "Welcome to Ansible\nand have a nice day...\n"
+    tasks:
+    - name: sample motd
+      copy:
+       dest: /etc/motd
+       content: "{{motd_welcome}}\nHostname: {{ansible_hostname}}\nIPv4 Address: {{ansible_default_ipv4.address}}\n"
+       owner: root
+       group: root
+       mode: 0644
+
+  - hosts: oel-ansible-1
+    tasks:
+    - name: Dump all vars
+      action: template src=/etc/ansible/centris/tmp/dumpall.j2 dest=/etc/ansible/centris/tmp/ansible.all

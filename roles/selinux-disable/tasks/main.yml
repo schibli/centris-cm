@@ -1,0 +1,9 @@
+- name: disable SELinux
+  command: setenforce 0
+  ignore_errors: True
+
+- name: install Python bindings
+  yum: name=libselinux-python state=present
+
+- name: put SELinux config
+  template: src=selinux/config dest=/etc/selinux/config owner=root group=root mode=0644

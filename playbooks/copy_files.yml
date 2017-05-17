@@ -1,0 +1,21 @@
+---
+# copy and manipulate files to and on clients
+  - hosts: dbserver 
+    user: root
+    tasks:
+    - name: copy repo
+      copy: src=/etc/ansible/files/ol7.repo dest=/etc/yum.repos.d/
+      tags:
+        - copy_repo
+
+    - name: copy resolv.conf
+      copy: src=/etc/ansible/files/resolv.conf dest=/etc/
+      tags:
+        - copy_resolv.conf
+      
+    - lineinfile: dest=/etc/yum.repos.d/public-yum-ol7.repo
+                  state=present
+                  regexp='enabled=1'
+                  line='enabled=0'
+      tags:
+        - manipulate_repo

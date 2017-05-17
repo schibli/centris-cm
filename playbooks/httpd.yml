@@ -1,0 +1,16 @@
+---
+  - hosts: dbserver 
+    user: root
+    tasks:
+     - name: copy repo file
+       copy: src=/etc/ansible/files/ser.repo dest=/etc/yum.repos.d/ser.repo
+       tags:
+         - copy_repo
+     - name: installing httpd
+       action: yum name=httpd state=installed
+     - name: copy index.html
+       copy: src=files/index.html dest=/var/www/html/index.html
+     - name: start apache
+       service:
+        name: httpd
+        state: restarted

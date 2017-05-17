@@ -1,0 +1,6 @@
+---
+# dump all ansible variables to the file /root/anible.all on client
+  - hosts: lhtest2.centrisag.ch
+    tasks:
+    - name: Dump all vars
+      action: template src=dumpall.j2 dest=./ansible.all

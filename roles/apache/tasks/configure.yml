@@ -1,0 +1,37 @@
+---
+# configuring httpd.conf and sending sample html file
+- name: httpd.conf file
+  copy: src=httpd.conf dest=/etc/httpd/conf/httpd.conf
+  notify:
+     restart apache service
+  tags:
+     - configuration
+
+# adding user mike1
+- user: 
+    name: mike1
+    groups: users
+    state: present
+    append: yes
+
+# copying default index.html to remote hosts
+- name: sample index.html
+  vars:
+   index_welcome: "Welcome to \n"
+   index_second: "This is the initial index.html, copied and configured by Ansible.\n"
+  copy:
+     dest: /var/www/html/index.html
+     content: "{{index_welcome}} Hostname: {{ansible_hostname}}\n {{index_second}}"
+     owner: mike1
+     group: users
+     mode: 0644
+  tags:
+     - index
+
+# configure httpd to "Listen" on port 8080
+- lineinfile: dest=/etc/httpd/conf/httpd.conf 
+     state=present 
+     regexp='#Listen'
+     line='Listen {{ansible_default_ipv4.address}}:8080'
+  tags:
+     - index

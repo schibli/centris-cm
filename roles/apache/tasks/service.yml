@@ -1,0 +1,6 @@
+---
+# start apache service
+- name: starting apache service
+  service: name=httpd state=started
+  tags:
+    - start service

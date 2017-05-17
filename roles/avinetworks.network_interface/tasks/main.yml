@@ -1,0 +1,42 @@
+---
+- name: Add the OS specific varibles
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# RedHat specific stuff
+- include: redhat.yml
+  when: ansible_os_family == 'RedHat'
+
+# Create configuration files in the net_path for ethernet, vlan, bond and bridge interfaces
+- name: Create the network configuration file for ethernet devices
+  template: src=ethernet_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
+  with_items: "{{ network_ether_interfaces }}"
+  when: network_ether_interfaces is defined
+  register: ether_result
+
+- name: Create the network configuration file for slave in the bond devices
+  template: src=bond_slave_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.1 }}
+  with_subelements:
+   - "{{ network_bond_interfaces }}"
+   - bond_slaves
+  when: network_bond_interfaces is defined
+  register: bond_port_result
+
+- name: Create the network configuration file for bond devices
+  template: src=bond_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
+  with_items: "{{ network_bond_interfaces }}"
+  when: network_bond_interfaces is defined
+  register: bond_result
+
+- name: Make sure the bonding module is loaded
+  modprobe: name=bonding state=present
+  when: bond_result|changed
+
+- name: Create the network configuration file for vlan devices
+  template: src=ethernet_{{ ansible_os_family }}.j2 dest={{ net_path }}/ifcfg-{{ item.device }}
+  with_items: "{{ network_vlan_interfaces }}"
+  when: network_vlan_interfaces is defined
+  register: vlan_result
+
+- name: Restart on RedHat Systems
+  service: name=network state=restarted
+  when: network_allow_service_restart and ansible_os_family == 'RedHat'

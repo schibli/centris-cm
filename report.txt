@@ -1,0 +1,16 @@
+Check 1 need reboot
+oel-ansible-1: No
+
+Check 2 swap used
+oel-ansible-1: 0 MB
+ 
+
+Check 3 total memory
+oel-ansible-1: 1725 MB
+ 
+
+Check 4 ip config
+oel-ansible-1      IP: 192.168.79.146
+oel-ansible-1 Netmask: 255.255.255.0
+oel-ansible-1 Gateway: 192.168.79.2
+ 

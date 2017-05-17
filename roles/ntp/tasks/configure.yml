@@ -1,0 +1,6 @@
+---
+# configuring ntpd.conf and copying configuration file to target server
+- name: ntp.conf file
+  copy: src=ntp.conf dest=/etc/ntp.conf
+  notify:
+     restart ntpd service

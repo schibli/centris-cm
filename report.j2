@@ -1,0 +1,22 @@
+Check 1 need reboot
+{% for i in play_hosts | sort %}
+{{ i }}: {{ hostvars[i]['need_reboot']['stat']['exists'] |
+ternary('Yes', 'No') }}
+{% endfor %}
+
+Check 2 swap used
+{% for i in play_hosts | sort %}
+{{ i }}: {{ hostvars[i]['ansible_memory_mb']['swap']['used'] }} MB
+{% endfor %} 
+
+Check 3 total memory
+{% for i in play_hosts | sort %}
+{{ i }}: {{ hostvars[i]['ansible_memory_mb']['real']['total'] }} MB
+{% endfor %} 
+
+Check 4 ip config
+{% for i in play_hosts | sort %}
+{{ i }}      IP: {{ hostvars[i]['ansible_default_ipv4']['address'] }}
+{{ i }} Netmask: {{ hostvars[i]['ansible_default_ipv4']['netmask'] }}
+{{ i }} Gateway: {{ hostvars[i]['ansible_default_ipv4']['gateway'] }}
+{% endfor %} 

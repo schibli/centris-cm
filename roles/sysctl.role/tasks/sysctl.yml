@@ -1,0 +1,10 @@
+---
+# reconfigure system parameter with sysctl
+- name: reconfigure vm.swappiness
+  sysctl:
+    name: vm.swappiness
+    value: 20
+    state: present
+    reload: yes
+  tags: 
+    - param_reconf

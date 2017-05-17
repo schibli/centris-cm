@@ -1,0 +1,13 @@
+---
+  - hosts: all
+    tasks:
+    - name: Check if reboot is needed
+      stat: path=/var/run/reboot-required
+      register: need_reboot
+
+    - name: Generate report
+      template:
+        src=report.j2
+        dest=./report.txt
+      delegate_to: localhost
+      run_once: true 

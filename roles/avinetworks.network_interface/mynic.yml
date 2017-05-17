@@ -1,0 +1,5 @@
+---
+# test playbook
+- hosts: dbserver
+  roles:
+    - role: avinetworks.network_interface

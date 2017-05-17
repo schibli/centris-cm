@@ -1,0 +1,59 @@
+---
+# playbook to change bios setting
+- hosts: uxl110.centrisag.ch
+  user: root
+  tasks:
+    - name: add LD_LIBRARY_PATH
+      lineinfile: dest=/etc/environment
+                  state=present
+                  line=LD_LIBRARY_PATH=/tmp
+      tags:
+        - set_LD_LIBRARY_PATH
+
+    - name: copy conrep tool
+      copy: src=/etc/ansible/tools/conrep dest=/tmp/ owner=root mode=0755
+      tags:
+        - copy_conrep_tool
+
+    - name: copy conrep.xml
+      copy: src=/etc/ansible/tools/conrep.xml dest=/tmp/ owner=root mode=0644
+      tags:
+        - copy_conrep_xml
+
+    - name: copy missing library
+      copy: src=/etc/ansible/tools/libcpqci64.so dest=/tmp/ owner=root mode=0755
+      tags:
+        - copy_library
+
+    - name: save bios to local file
+      shell: /tmp/conrep -s -x /tmp/conrep.xml -f /tmp/conrep.dat
+      tags:
+        - save_bios_local
+
+    - name: change Intel_Hyperthreading from Enabled to Disabled
+      lineinfile: dest=/tmp/conrep.dat
+                  state=present
+                  regexp='<Section name="Intel_Hyperthreading" helptext="Toggles hyperthreading on Intel based G6 and greater systems">Enabled</Section>'
+                  line='<Section name="Intel_Hyperthreading" helptext="Toggles hyperthreading on Intel based G6 and greater systems">Disabled</Section>'
+      tags:
+        - manipulate_local_bios
+
+    - name: shell script execution
+      shell: /tmp/conrep -l -f /tmp/conrep.dat
+      tags:
+        - restore_bios
+
+    - name: collect files
+      find: path=/tmp/ patterns="conrep*,lib*"
+      register: collected_files
+
+    - name: clean up files
+      file: path={{ item.path }} state=absent
+      with_items: >
+        {{ collected_files.files }}
+
+    - name: remove LD_LIBRARY_PATH from /etc/environment
+      lineinfile: dest=/etc/environment
+                  state=absent
+                  line=LD_LIBRARY_PATH=/tmp
+
