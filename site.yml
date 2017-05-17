@@ -1,0 +1,6 @@
+---
+- hosts: all
+  roles:
+    - apache
+    - ntp
+    - sysctl.role
